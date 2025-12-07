@@ -134,10 +134,7 @@ function EventCard({ event }: { event: Event }) {
                         )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                        <span className="text-xs text-muted-foreground">
-                            By {event.organizer}
-                        </span>
+                    <div className="flex items-center justify-end pt-2">
                         <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
                     </div>
                 </div>

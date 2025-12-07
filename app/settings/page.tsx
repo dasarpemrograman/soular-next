@@ -88,10 +88,14 @@ export default function SettingsPage() {
     const handleSave = () => {
         if (!localSettings) return;
 
-        const { id, user_id, created_at, updated_at, ...updateData } =
-            localSettings;
+        // Safely extract metadata fields if they exist
+        const settingsCopy: any = { ...localSettings };
+        delete settingsCopy.id;
+        delete settingsCopy.user_id;
+        delete settingsCopy.created_at;
+        delete settingsCopy.updated_at;
 
-        updateSettings.mutate(updateData, {
+        updateSettings.mutate(settingsCopy, {
             onSuccess: () => {
                 setHasChanges(false);
             },
@@ -99,7 +103,7 @@ export default function SettingsPage() {
     };
 
     const handleReset = () => {
-        setLocalSettings(settings);
+        setLocalSettings(settings || defaultSettings);
         setHasChanges(false);
     };
 

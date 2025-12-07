@@ -350,17 +350,6 @@ export default function EventDetailPage({
                                 </div>
                             )}
 
-                            {/* Organizer */}
-                            <div className="flex items-start gap-3">
-                                <User className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-medium">Organized by</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {event.organizer}
-                                    </p>
-                                </div>
-                            </div>
-
                             <div className="pt-4 border-t space-y-3">
                                 {/* Registration Button */}
                                 {isUpcoming && (

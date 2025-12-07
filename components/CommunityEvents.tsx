@@ -101,8 +101,7 @@ export const CommunityEvents = () => {
                                                         </div>
                                                     )}
                                                     <div className="absolute top-4 left-4 px-3 py-1 bg-primary/90 backdrop-blur-sm rounded-full text-xs font-medium text-primary-foreground capitalize">
-                                                        {event.organizer ||
-                                                            "Event"}
+                                                        {event.event_type}
                                                     </div>
                                                 </div>
 

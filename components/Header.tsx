@@ -1,6 +1,6 @@
 "use client";
 
-import { Film, Search, User, Menu, LogOut, X } from "lucide-react";
+import { Film, Search, User, Menu, LogOut, X, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -108,6 +108,18 @@ export const Header = () => {
                         >
                             Events
                         </Link>
+                        {user && (
+                            <Link href="/films/upload">
+                                <Button
+                                    variant="premium"
+                                    size="sm"
+                                    className="gap-2"
+                                >
+                                    <Upload className="h-4 w-4" />
+                                    Upload Film
+                                </Button>
+                            </Link>
+                        )}
                     </nav>
 
                     <div className="flex items-center gap-3">
@@ -331,6 +343,30 @@ export const Header = () => {
                                         </span>
                                     </Link>
                                 </motion.div>
+
+                                {user && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.28 }}
+                                        className="pt-2"
+                                    >
+                                        <Link
+                                            href="/films/upload"
+                                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-200 group border border-purple-500/20"
+                                            onClick={() =>
+                                                setMobileMenuOpen(false)
+                                            }
+                                        >
+                                            <div className="p-2 rounded-lg bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors">
+                                                <Upload className="h-5 w-5 text-purple-400" />
+                                            </div>
+                                            <span className="text-base font-medium text-purple-400">
+                                                Upload Film
+                                            </span>
+                                        </Link>
+                                    </motion.div>
+                                )}
 
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}

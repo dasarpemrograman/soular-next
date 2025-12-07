@@ -50,22 +50,22 @@ import {
 } from "lucide-react";
 
 const ROLES = [
-    { value: "", label: "All Roles" },
+    { value: "all", label: "All Roles" },
     { value: "user", label: "User" },
     { value: "moderator", label: "Moderator" },
     { value: "admin", label: "Admin" },
 ];
 
 const BAN_STATUS = [
-    { value: "", label: "All Users" },
+    { value: "all", label: "All Users" },
     { value: "false", label: "Active Users" },
     { value: "true", label: "Banned Users" },
 ];
 
 export default function AdminUsersPage() {
     const [search, setSearch] = useState("");
-    const [roleFilter, setRoleFilter] = useState("");
-    const [bannedFilter, setBannedFilter] = useState("");
+    const [roleFilter, setRoleFilter] = useState("all");
+    const [bannedFilter, setBannedFilter] = useState("all");
     const [page, setPage] = useState(0);
     const limit = 20;
 
@@ -86,7 +86,13 @@ export default function AdminUsersPage() {
         data: usersData,
         isLoading,
         refetch,
-    } = useUsers(search, roleFilter, bannedFilter, limit, page * limit);
+    } = useUsers(
+        search,
+        roleFilter === "all" ? "" : roleFilter,
+        bannedFilter === "all" ? "" : bannedFilter,
+        limit,
+        page * limit,
+    );
     const banUser = useBanUser();
     const unbanUser = useUnbanUser();
     const updateRole = useUpdateUserRole();

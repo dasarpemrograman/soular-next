@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   role TEXT DEFAULT 'user' CHECK (role IN ('user', 'moderator', 'admin')),
   is_banned BOOLEAN DEFAULT false,
   ban_reason TEXT,
+  ban_expires_at TIMESTAMPTZ,
   banned_at TIMESTAMPTZ,
   banned_by UUID REFERENCES public.profiles(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -629,7 +630,7 @@ CREATE POLICY "Users can insert own settings"
 CREATE TABLE IF NOT EXISTS public.moderation_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   moderator_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  action_type TEXT NOT NULL CHECK (action_type IN ('pin', 'unpin', 'lock', 'unlock', 'delete_discussion', 'delete_post', 'ban_user', 'unban_user')),
+  action_type TEXT NOT NULL CHECK (action_type IN ('pin', 'unpin', 'lock', 'unlock', 'delete_discussion', 'delete_post', 'ban_user', 'unban_user', 'role_changed')),
   target_type TEXT NOT NULL CHECK (target_type IN ('discussion', 'post', 'user')),
   target_id UUID NOT NULL,
   reason TEXT,

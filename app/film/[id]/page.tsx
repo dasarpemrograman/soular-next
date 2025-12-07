@@ -5,6 +5,7 @@ import { useFilm, useFilms } from "@/hooks/useFilms";
 import { useFavorite, useFavoriteStatus } from "@/hooks/useFavorite";
 import { Footer } from "@/components/Footer";
 import { YouTubePlayer } from "@/components/YouTubePlayer";
+import { FilmComments } from "@/components/FilmComments";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -281,6 +282,16 @@ export default function FilmDetailPage({
                             </motion.div>
                         </div>
                     </div>
+
+                    {/* Comments Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="mt-16"
+                    >
+                        <FilmComments filmId={id} />
+                    </motion.div>
 
                     {/* Related Films Section */}
                     {!relatedLoading && relatedFilms.length > 0 && (

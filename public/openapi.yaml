@@ -1,0 +1,1138 @@
+openapi: 3.0.3
+info:
+  title: Soular Next API
+  description: |
+    REST API for Soular - Platform Kurasi Film Indonesia
+
+    A comprehensive film curation platform that provides:
+    - Film browsing and discovery
+    - User authentication and profiles
+    - Community forums and discussions
+    - Event management and registration
+    - Premium subscription system
+    - Film comments and ratings
+    - Favorites and collections
+    - Admin moderation tools
+
+    ## Authentication
+    Most endpoints require authentication using Supabase Auth JWT tokens.
+    Include the token in the Authorization header: `Bearer <token>`
+
+    ## Base URL
+    - Development: `http://localhost:3000/api`
+    - Production: `https://soular-next.vercel.app/api`
+
+  version: 1.0.0
+  contact:
+    name: Soular Team
+    email: support@soular.id
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://soular-next.vercel.app/api
+    description: Production server
+
+tags:
+  - name: Films
+    description: Film management endpoints
+  - name: Events
+    description: Event management and registration
+  - name: Forums
+    description: Community forums and discussions
+  - name: Subscriptions
+    description: Premium subscription management
+  - name: Users
+    description: User profile and management
+  - name: Admin
+    description: Administrative functions
+  - name: Favorites
+    description: User favorites management
+  - name: Notifications
+    description: User notifications
+
+paths:
+  # ==================== FILMS ====================
+  /films:
+    get:
+      tags:
+        - Films
+      summary: Get films list
+      description: Retrieve a paginated list of films with optional filtering
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [all, Dokumenter, Drama, Eksperimental, Musikal, Thriller, Horor, Komedi, Petualangan]
+          description: Filter by film category
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in title and description
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  films:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Film'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Films
+      summary: Upload new film
+      description: Create a new film entry (requires authentication)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilmCreate'
+      responses:
+        '201':
+          description: Film created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Film created successfully
+                  film:
+                    $ref: '#/components/schemas/Film'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Slug already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /films/{id}:
+    get:
+      tags:
+        - Films
+      summary: Get film by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Film details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /films/{id}/comments:
+    get:
+      tags:
+        - Films
+      summary: Get film comments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+
+    post:
+      tags:
+        - Films
+      summary: Add comment to film
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+                - rating
+              properties:
+                content:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                parent_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== EVENTS ====================
+  /events:
+    get:
+      tags:
+        - Events
+      summary: Get events list
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /events/{id}/register:
+    post:
+      tags:
+        - Events
+      summary: Register for event
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Successfully registered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Already registered
+
+  /events/{id}/unregister:
+    delete:
+      tags:
+        - Events
+      summary: Unregister from event
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully unregistered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== FORUMS ====================
+  /forum:
+    get:
+      tags:
+        - Forums
+      summary: Get forums list
+      responses:
+        '200':
+          description: List of forums
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  forums:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Forum'
+
+  /forum/{slug}/posts:
+    get:
+      tags:
+        - Forums
+      summary: Get forum posts
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ForumPost'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  # ==================== SUBSCRIPTIONS ====================
+  /subscription:
+    get:
+      tags:
+        - Subscriptions
+      summary: Get subscription info
+      description: Get subscription plans or user's current subscription
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [plans]
+          description: Set to 'plans' to get available subscription plans
+      responses:
+        '200':
+          description: Subscription information
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      plans:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SubscriptionPlan'
+                  - type: object
+                    properties:
+                      subscription:
+                        $ref: '#/components/schemas/UserSubscription'
+                      profile:
+                        type: object
+                        properties:
+                          subscription_plan:
+                            type: string
+                          subscription_status:
+                            type: string
+                          subscription_ends_at:
+                            type: string
+                            format: date-time
+                            nullable: true
+
+    post:
+      tags:
+        - Subscriptions
+      summary: Subscribe to a plan
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - plan_name
+                - billing_cycle
+              properties:
+                plan_name:
+                  type: string
+                  enum: [free, basic, premium, pro]
+                billing_cycle:
+                  type: string
+                  enum: [monthly, yearly]
+      responses:
+        '200':
+          description: Subscription activated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  subscription:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Subscriptions
+      summary: Cancel subscription
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+
+  # ==================== FAVORITES ====================
+  /favorites:
+    get:
+      tags:
+        - Favorites
+      summary: Get user's favorite films
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favorites:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Film'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /favorites/{filmId}:
+    post:
+      tags:
+        - Favorites
+      summary: Add film to favorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: filmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Added to favorites
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Favorites
+      summary: Remove film from favorites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: filmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Removed from favorites
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== ADMIN ====================
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: Get users list (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [all, user, moderator, admin]
+        - name: banned
+          in: query
+          schema:
+            type: string
+            enum: [all, banned, active]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserProfile'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/users/{userId}/ban:
+    post:
+      tags:
+        - Admin
+      summary: Ban user (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reason
+              properties:
+                reason:
+                  type: string
+                duration_days:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: User banned successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/users/{userId}/unban:
+    post:
+      tags:
+        - Admin
+      summary: Unban user (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User unbanned successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/users/{userId}/role:
+    patch:
+      tags:
+        - Admin
+      summary: Change user role (Admin only)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  enum: [user, moderator, admin]
+      responses:
+        '200':
+          description: Role updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ==================== NOTIFICATIONS ====================
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get user notifications
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: unread_only
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /notifications/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      summary: Mark notification as read
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Marked as read
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Supabase Auth JWT token
+
+  schemas:
+    Film:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        director:
+          type: string
+        year:
+          type: integer
+        duration:
+          type: integer
+          description: Duration in minutes
+        category:
+          type: string
+          enum: [Dokumenter, Drama, Eksperimental, Musikal, Thriller, Horor, Komedi, Petualangan]
+        youtube_url:
+          type: string
+          format: uri
+        thumbnail:
+          type: string
+          format: uri
+          nullable: true
+        is_premium:
+          type: boolean
+        is_published:
+          type: boolean
+        rating:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+        view_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    FilmCreate:
+      type: object
+      required:
+        - title
+        - director
+        - category
+        - youtube_url
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+        description:
+          type: string
+          maxLength: 5000
+        director:
+          type: string
+          minLength: 1
+          maxLength: 255
+        year:
+          type: integer
+          minimum: 1900
+          maximum: 2100
+        duration:
+          type: integer
+          minimum: 1
+        category:
+          type: string
+          enum: [Dokumenter, Drama, Eksperimental, Musikal, Thriller, Horor, Komedi, Petualangan]
+        youtube_url:
+          type: string
+          format: uri
+        thumbnail:
+          type: string
+          format: uri
+        is_premium:
+          type: boolean
+          default: false
+        is_published:
+          type: boolean
+          default: true
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        host_id:
+          type: string
+          format: uuid
+        location:
+          type: string
+        date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+          nullable: true
+        max_participants:
+          type: integer
+          nullable: true
+        event_type:
+          type: string
+          enum: [online, offline, hybrid]
+        is_published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Forum:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        post_count:
+          type: integer
+        topic_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    ForumPost:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        forum_id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        is_pinned:
+          type: boolean
+        is_locked:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        film_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        like_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        user:
+          type: object
+          properties:
+            name:
+              type: string
+            username:
+              type: string
+            avatar:
+              type: string
+              nullable: true
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          enum: [free, basic, premium, pro]
+        display_name:
+          type: string
+        description:
+          type: string
+        price_monthly:
+          type: number
+          format: decimal
+        price_yearly:
+          type: number
+          format: decimal
+        features:
+          type: array
+          items:
+            type: string
+        max_downloads:
+          type: integer
+        max_offline_films:
+          type: integer
+        ad_free:
+          type: boolean
+        early_access:
+          type: boolean
+        exclusive_content:
+          type: boolean
+        priority_support:
+          type: boolean
+        is_active:
+          type: boolean
+        sort_order:
+          type: integer
+
+    UserSubscription:
+      type: object
+      properties:
+        plan_name:
+          type: string
+        plan_display_name:
+          type: string
+        status:
+          type: string
+          enum: [active, cancelled, expired, past_due, trialing]
+        billing_cycle:
+          type: string
+          enum: [monthly, yearly]
+        current_period_end:
+          type: string
+          format: date-time
+        cancel_at_period_end:
+          type: boolean
+        features:
+          type: array
+          items:
+            type: string
+        is_trial:
+          type: boolean
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        avatar:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [user, moderator, admin]
+        is_banned:
+          type: boolean
+        ban_reason:
+          type: string
+          nullable: true
+        subscription_plan:
+          type: string
+        subscription_status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        link:
+          type: string
+          nullable: true
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized - Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Unauthorized
+            details: Please login to access this resource
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Forbidden
+            details: You don't have permission to perform this action
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Not Found
+            details: The requested resource was not found
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Internal server error
+            details: An unexpected error occurred
+
+security:
+  - BearerAuth: []

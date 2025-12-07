@@ -57,9 +57,9 @@ export const HeroSection = () => {
         <section className="relative h-[90vh] flex items-center overflow-hidden">
             {/* Background Image with Overlay */}
             <div className="absolute inset-0">
-                {featuredFilm.thumbnail_url ? (
+                {featuredFilm.thumbnail ? (
                     <img
-                        src={featuredFilm.thumbnail_url}
+                        src={featuredFilm.thumbnail}
                         alt={featuredFilm.title}
                         className="w-full h-full object-cover"
                     />
@@ -117,11 +117,9 @@ export const HeroSection = () => {
                     </div>
 
                     <div className="flex items-center gap-6 mt-8 text-sm text-muted-foreground">
-                        {featuredFilm.duration_minutes && (
+                        {featuredFilm.duration && (
                             <>
-                                <span>
-                                    {featuredFilm.duration_minutes} menit
-                                </span>
+                                <span>{featuredFilm.duration} menit</span>
                                 <span>•</span>
                             </>
                         )}

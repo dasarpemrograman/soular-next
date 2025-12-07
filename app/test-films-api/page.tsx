@@ -13,8 +13,8 @@ interface Film {
     description: string;
     category: string;
     youtube_url: string;
-    thumbnail_url: string | null;
-    duration_minutes: number | null;
+    thumbnail: string | null;
+    duration: number | null;
     created_at: string;
 }
 
@@ -101,7 +101,9 @@ export default function TestFilmsAPIPage() {
 
             setSingleFilm(data.film);
         } catch (err) {
-            setSingleError(err instanceof Error ? err.message : "Unknown error");
+            setSingleError(
+                err instanceof Error ? err.message : "Unknown error",
+            );
         } finally {
             setSingleLoading(false);
         }
@@ -128,7 +130,8 @@ export default function TestFilmsAPIPage() {
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-bold">Films API Test</h1>
                     <p className="text-muted-foreground">
-                        Test the films API endpoints with filtering and pagination
+                        Test the films API endpoints with filtering and
+                        pagination
                     </p>
                 </div>
 
@@ -173,12 +176,18 @@ export default function TestFilmsAPIPage() {
                                 min="1"
                                 max="50"
                                 value={limit}
-                                onChange={(e) => setLimit(parseInt(e.target.value) || 10)}
+                                onChange={(e) =>
+                                    setLimit(parseInt(e.target.value) || 10)
+                                }
                             />
                         </div>
                     </div>
 
-                    <Button onClick={() => fetchFilms(0)} disabled={loading} className="mb-6">
+                    <Button
+                        onClick={() => fetchFilms(0)}
+                        disabled={loading}
+                        className="mb-6"
+                    >
                         {loading ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -194,7 +203,9 @@ export default function TestFilmsAPIPage() {
 
                     {error && (
                         <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                                {error}
+                            </p>
                         </div>
                     )}
 
@@ -204,8 +215,11 @@ export default function TestFilmsAPIPage() {
                             <div className="flex items-center justify-between mb-4">
                                 <p className="text-sm text-muted-foreground">
                                     Showing {pagination.offset + 1} to{" "}
-                                    {Math.min(pagination.offset + pagination.limit, pagination.total)} of{" "}
-                                    {pagination.total} results
+                                    {Math.min(
+                                        pagination.offset + pagination.limit,
+                                        pagination.total,
+                                    )}{" "}
+                                    of {pagination.total} results
                                 </p>
                             </div>
 
@@ -217,7 +231,9 @@ export default function TestFilmsAPIPage() {
                                                 <Film className="h-6 w-6 text-white" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold truncate">{film.title}</h3>
+                                                <h3 className="font-semibold truncate">
+                                                    {film.title}
+                                                </h3>
                                                 <p className="text-sm text-muted-foreground line-clamp-2">
                                                     {film.description}
                                                 </p>
@@ -225,9 +241,9 @@ export default function TestFilmsAPIPage() {
                                                     <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                                                         {film.category}
                                                     </span>
-                                                    {film.duration_minutes && (
+                                                    {film.duration && (
                                                         <span className="text-xs text-muted-foreground">
-                                                            {film.duration_minutes} min
+                                                            {film.duration} min
                                                         </span>
                                                     )}
                                                 </div>
@@ -244,7 +260,9 @@ export default function TestFilmsAPIPage() {
                             <div className="flex items-center justify-center gap-2 mt-6">
                                 <Button
                                     onClick={handlePrevPage}
-                                    disabled={pagination.offset === 0 || loading}
+                                    disabled={
+                                        pagination.offset === 0 || loading
+                                    }
                                     variant="outline"
                                     size="sm"
                                 >
@@ -275,7 +293,9 @@ export default function TestFilmsAPIPage() {
 
                 {/* Single Film Section */}
                 <Card className="p-6">
-                    <h2 className="text-2xl font-bold mb-6">GET /api/films/[id]</h2>
+                    <h2 className="text-2xl font-bold mb-6">
+                        GET /api/films/[id]
+                    </h2>
 
                     <div className="flex gap-3 mb-6">
                         <div className="flex-1">
@@ -285,7 +305,10 @@ export default function TestFilmsAPIPage() {
                                 onChange={(e) => setFilmId(e.target.value)}
                             />
                         </div>
-                        <Button onClick={fetchSingleFilm} disabled={singleLoading}>
+                        <Button
+                            onClick={fetchSingleFilm}
+                            disabled={singleLoading}
+                        >
                             {singleLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
@@ -296,7 +319,9 @@ export default function TestFilmsAPIPage() {
 
                     {singleError && (
                         <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                            <p className="text-sm text-red-600 dark:text-red-400">{singleError}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                                {singleError}
+                            </p>
                         </div>
                     )}
 
@@ -307,27 +332,44 @@ export default function TestFilmsAPIPage() {
                                     <Film className="h-8 w-8 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-xl font-bold mb-2">{singleFilm.title}</h3>
-                                    <p className="text-muted-foreground mb-4">{singleFilm.description}</p>
+                                    <h3 className="text-xl font-bold mb-2">
+                                        {singleFilm.title}
+                                    </h3>
+                                    <p className="text-muted-foreground mb-4">
+                                        {singleFilm.description}
+                                    </p>
                                     <div className="grid gap-2 text-sm">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-muted-foreground">ID:</span>
-                                            <span className="font-mono">{singleFilm.id}</span>
+                                            <span className="text-muted-foreground">
+                                                ID:
+                                            </span>
+                                            <span className="font-mono">
+                                                {singleFilm.id}
+                                            </span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-muted-foreground">Category:</span>
+                                            <span className="text-muted-foreground">
+                                                Category:
+                                            </span>
                                             <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                                                 {singleFilm.category}
                                             </span>
                                         </div>
-                                        {singleFilm.duration_minutes && (
+                                        {singleFilm.duration && (
                                             <div className="flex items-center justify-between">
-                                                <span className="text-muted-foreground">Duration:</span>
-                                                <span>{singleFilm.duration_minutes} minutes</span>
+                                                <span className="text-muted-foreground">
+                                                    Duration:
+                                                </span>
+                                                <span>
+                                                    {singleFilm.duration}{" "}
+                                                    minutes
+                                                </span>
                                             </div>
                                         )}
                                         <div className="flex items-center justify-between">
-                                            <span className="text-muted-foreground">YouTube URL:</span>
+                                            <span className="text-muted-foreground">
+                                                YouTube URL:
+                                            </span>
                                             <a
                                                 href={singleFilm.youtube_url}
                                                 target="_blank"
@@ -349,18 +391,37 @@ export default function TestFilmsAPIPage() {
                     <h2 className="text-2xl font-bold mb-4">API Endpoints</h2>
                     <div className="space-y-4 text-sm">
                         <div>
-                            <h3 className="font-semibold mb-2">GET /api/films</h3>
-                            <p className="text-muted-foreground mb-2">Query Parameters:</p>
+                            <h3 className="font-semibold mb-2">
+                                GET /api/films
+                            </h3>
+                            <p className="text-muted-foreground mb-2">
+                                Query Parameters:
+                            </p>
                             <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-4">
-                                <li><code>category</code> - Filter by category</li>
-                                <li><code>search</code> - Search in title and description</li>
-                                <li><code>limit</code> - Results per page (default: 10)</li>
-                                <li><code>offset</code> - Pagination offset (default: 0)</li>
+                                <li>
+                                    <code>category</code> - Filter by category
+                                </li>
+                                <li>
+                                    <code>search</code> - Search in title and
+                                    description
+                                </li>
+                                <li>
+                                    <code>limit</code> - Results per page
+                                    (default: 10)
+                                </li>
+                                <li>
+                                    <code>offset</code> - Pagination offset
+                                    (default: 0)
+                                </li>
                             </ul>
                         </div>
                         <div>
-                            <h3 className="font-semibold mb-2">GET /api/films/[id]</h3>
-                            <p className="text-muted-foreground">Returns a single film by ID</p>
+                            <h3 className="font-semibold mb-2">
+                                GET /api/films/[id]
+                            </h3>
+                            <p className="text-muted-foreground">
+                                Returns a single film by ID
+                            </p>
                         </div>
                     </div>
                 </Card>

@@ -33,7 +33,34 @@ export default function SettingsPage() {
     const { data: settings, isLoading: settingsLoading } = useSettings();
     const updateSettings = useUpdateSettings();
 
-    const [localSettings, setLocalSettings] = useState(settings);
+    // Default settings to prevent undefined errors
+    const defaultSettings = {
+        email_notifications: true,
+        email_on_reply: true,
+        email_on_mention: true,
+        email_on_like: false,
+        email_on_event: true,
+        email_on_moderation: true,
+        push_notifications: true,
+        push_on_reply: true,
+        push_on_mention: true,
+        push_on_like: false,
+        push_on_event: true,
+        push_on_moderation: true,
+        show_email: false,
+        show_activity: true,
+        allow_mentions: true,
+        allow_direct_messages: true,
+        theme: "system" as const,
+        language: "id" as const,
+        posts_per_page: 20,
+        email_digest: "never" as const,
+        digest_day: 0,
+    };
+
+    const [localSettings, setLocalSettings] = useState(
+        settings || defaultSettings,
+    );
     const [hasChanges, setHasChanges] = useState(false);
 
     // Update local settings when fetched settings change
@@ -432,9 +459,12 @@ export default function SettingsPage() {
                                         </div>
                                         <Switch
                                             id="push-on-like"
-                                            checked={localSettings.push_on_like}
+                                            checked={
+                                                localSettings?.push_on_like ||
+                                                false
+                                            }
                                             disabled={
-                                                !localSettings.push_notifications
+                                                !localSettings?.push_notifications
                                             }
                                             onCheckedChange={(checked) =>
                                                 handleSettingChange(
@@ -511,7 +541,10 @@ export default function SettingsPage() {
                                         Digest Frequency
                                     </Label>
                                     <Select
-                                        value={localSettings.email_digest}
+                                        value={
+                                            localSettings?.email_digest ||
+                                            "never"
+                                        }
                                         onValueChange={(value) =>
                                             handleSettingChange(
                                                 "email_digest",
@@ -545,7 +578,9 @@ export default function SettingsPage() {
                                             Digest Day
                                         </Label>
                                         <Select
-                                            value={localSettings.digest_day.toString()}
+                                            value={(
+                                                localSettings?.digest_day || 0
+                                            ).toString()}
                                             onValueChange={(value) =>
                                                 handleSettingChange(
                                                     "digest_day",
@@ -604,7 +639,9 @@ export default function SettingsPage() {
                                     </div>
                                     <Switch
                                         id="show-email"
-                                        checked={localSettings.show_email}
+                                        checked={
+                                            localSettings?.show_email || false
+                                        }
                                         onCheckedChange={(checked) =>
                                             handleSettingChange(
                                                 "show_email",
@@ -625,7 +662,9 @@ export default function SettingsPage() {
                                     </div>
                                     <Switch
                                         id="show-activity"
-                                        checked={localSettings.show_activity}
+                                        checked={
+                                            localSettings?.show_activity || true
+                                        }
                                         onCheckedChange={(checked) =>
                                             handleSettingChange(
                                                 "show_activity",
@@ -653,7 +692,10 @@ export default function SettingsPage() {
                                     </div>
                                     <Switch
                                         id="allow-mentions"
-                                        checked={localSettings.allow_mentions}
+                                        checked={
+                                            localSettings?.allow_mentions ||
+                                            true
+                                        }
                                         onCheckedChange={(checked) =>
                                             handleSettingChange(
                                                 "allow_mentions",
@@ -697,7 +739,7 @@ export default function SettingsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="theme">Color Theme</Label>
                                     <Select
-                                        value={localSettings.theme}
+                                        value={localSettings?.theme || "system"}
                                         onValueChange={(value) =>
                                             handleSettingChange("theme", value)
                                         }
@@ -732,7 +774,7 @@ export default function SettingsPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="language">Language</Label>
                                     <Select
-                                        value={localSettings.language}
+                                        value={localSettings?.language || "id"}
                                         onValueChange={(value) =>
                                             handleSettingChange(
                                                 "language",
@@ -769,7 +811,9 @@ export default function SettingsPage() {
                                         Posts Per Page
                                     </Label>
                                     <Select
-                                        value={localSettings.posts_per_page.toString()}
+                                        value={(
+                                            localSettings?.posts_per_page || 20
+                                        ).toString()}
                                         onValueChange={(value) =>
                                             handleSettingChange(
                                                 "posts_per_page",

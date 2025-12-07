@@ -25,11 +25,17 @@ interface Event {
     id: string;
     title: string;
     description: string;
-    event_date: string;
+    date: string;
+    end_date: string | null;
     location: string;
-    organizer: string;
+    is_online: boolean;
+    online_link: string | null;
+    event_type: string;
     max_participants: number | null;
     image_url: string | null;
+    host_id: string | null;
+    status: string;
+    tags: string[];
     created_at: string;
 }
 
@@ -38,7 +44,7 @@ interface Event {
 // ============================================
 
 function EventCard({ event }: { event: Event }) {
-    const eventDate = new Date(event.event_date);
+    const eventDate = new Date(event.date);
     const isUpcoming = eventDate > new Date();
 
     return (
@@ -113,13 +119,17 @@ function EventCard({ event }: { event: Event }) {
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
-                            <span className="line-clamp-1">{event.location}</span>
+                            <span className="line-clamp-1">
+                                {event.location}
+                            </span>
                         </div>
 
                         {event.max_participants && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Users className="h-4 w-4 flex-shrink-0" />
-                                <span>Max {event.max_participants} participants</span>
+                                <span>
+                                    Max {event.max_participants} participants
+                                </span>
                             </div>
                         )}
                     </div>
@@ -138,10 +148,14 @@ function EventCard({ event }: { event: Event }) {
 
 function EventsContent() {
     const searchParams = useSearchParams();
-    const initialStatus = (searchParams.get("status") as "upcoming" | "past" | "all") || "upcoming";
+    const initialStatus =
+        (searchParams.get("status") as "upcoming" | "past" | "all") ||
+        "upcoming";
     const initialSearch = searchParams.get("search") || "";
 
-    const [status, setStatus] = useState<"upcoming" | "past" | "all">(initialStatus);
+    const [status, setStatus] = useState<"upcoming" | "past" | "all">(
+        initialStatus,
+    );
     const [search, setSearch] = useState(initialSearch);
     const [searchInput, setSearchInput] = useState(initialSearch);
     const [offset, setOffset] = useState(0);
@@ -223,7 +237,10 @@ function EventsContent() {
                         </div>
 
                         {/* Search */}
-                        <form onSubmit={handleSearch} className="flex gap-2 w-full sm:w-auto">
+                        <form
+                            onSubmit={handleSearch}
+                            className="flex gap-2 w-full sm:w-auto"
+                        >
                             <Input
                                 type="text"
                                 placeholder="Search events..."
@@ -244,7 +261,8 @@ function EventsContent() {
                         {data.total > 0 ? (
                             <>
                                 Showing {Math.min(offset + 1, data.total)}-
-                                {Math.min(offset + limit, data.total)} of {data.total} events
+                                {Math.min(offset + limit, data.total)} of{" "}
+                                {data.total} events
                             </>
                         ) : (
                             "No events found"
@@ -302,7 +320,9 @@ function EventsContent() {
                             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
                                 <CalendarDays className="h-10 w-10 text-primary" />
                             </div>
-                            <h2 className="text-2xl font-bold mb-2">No Events Found</h2>
+                            <h2 className="text-2xl font-bold mb-2">
+                                No Events Found
+                            </h2>
                             <p className="text-muted-foreground mb-6 max-w-md">
                                 {search
                                     ? `No events match your search "${search}". Try different keywords.`
@@ -392,7 +412,9 @@ export default function EventsPage() {
                 <div className="min-h-screen flex items-center justify-center bg-background">
                     <div className="flex flex-col items-center gap-3">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-muted-foreground">Loading events...</p>
+                        <p className="text-muted-foreground">
+                            Loading events...
+                        </p>
                     </div>
                 </div>
             }

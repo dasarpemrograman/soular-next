@@ -138,12 +138,11 @@ export default function FilmDetailPage({
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-                                        {film.duration_minutes && (
+                                        {film.duration && (
                                             <div className="flex items-center gap-1.5">
                                                 <Clock className="h-4 w-4" />
                                                 <span>
-                                                    {film.duration_minutes}{" "}
-                                                    minutes
+                                                    {film.duration} minutes
                                                 </span>
                                             </div>
                                         )}
@@ -221,14 +220,13 @@ export default function FilmDetailPage({
                                                 {film.category}
                                             </p>
                                         </div>
-                                        {film.duration_minutes && (
+                                        {film.duration && (
                                             <div>
                                                 <p className="text-sm text-muted-foreground mb-1">
                                                     Duration
                                                 </p>
                                                 <p className="font-medium">
-                                                    {film.duration_minutes}{" "}
-                                                    minutes
+                                                    {film.duration} minutes
                                                 </p>
                                             </div>
                                         )}
@@ -252,10 +250,10 @@ export default function FilmDetailPage({
                                 </Card>
 
                                 {/* Thumbnail Card */}
-                                {film.thumbnail_url && (
+                                {film.thumbnail && (
                                     <Card className="overflow-hidden">
                                         <img
-                                            src={film.thumbnail_url}
+                                            src={film.thumbnail}
                                             alt={film.title}
                                             className="w-full aspect-[2/3] object-cover"
                                         />
@@ -316,10 +314,10 @@ export default function FilmDetailPage({
                                             >
                                                 <Card className="group overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 cursor-pointer">
                                                     <div className="relative aspect-[2/3] overflow-hidden bg-muted">
-                                                        {relatedFilm.thumbnail_url ? (
+                                                        {relatedFilm.thumbnail ? (
                                                             <img
                                                                 src={
-                                                                    relatedFilm.thumbnail_url
+                                                                    relatedFilm.thumbnail
                                                                 }
                                                                 alt={
                                                                     relatedFilm.title
@@ -350,12 +348,12 @@ export default function FilmDetailPage({
                                                                 relatedFilm.description
                                                             }
                                                         </p>
-                                                        {relatedFilm.duration_minutes && (
+                                                        {relatedFilm.duration && (
                                                             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
                                                                 <Clock className="h-3 w-3" />
                                                                 <span>
                                                                     {
-                                                                        relatedFilm.duration_minutes
+                                                                        relatedFilm.duration
                                                                     }{" "}
                                                                     min
                                                                 </span>

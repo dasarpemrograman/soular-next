@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export const Header = () => {
     const { user, loading, signOut } = useAuth();
+    const { data: profile } = useProfile();
     const router = useRouter();
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -31,9 +33,12 @@ export const Header = () => {
         }
     };
 
-    // Get user's display name from metadata or email
+    // Get user's display name from profile or metadata or email
     const getUserDisplayName = () => {
         if (!user) return null;
+
+        // Try to get name from profile first
+        if (profile?.name) return profile.name;
 
         // Try to get name from user metadata
         const name = user.user_metadata?.name || user.user_metadata?.full_name;
@@ -45,6 +50,11 @@ export const Header = () => {
         }
 
         return "User";
+    };
+
+    // Get user's avatar URL from profile
+    const getUserAvatar = () => {
+        return profile?.avatar || null;
     };
 
     return (
@@ -99,16 +109,30 @@ export const Header = () => {
                             {user ? (
                                 <div className="hidden md:flex items-center gap-3">
                                     <NotificationBell />
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-8 w-8 rounded-full bg-gradient-premium flex items-center justify-center text-white text-sm font-medium">
-                                            {getUserDisplayName()
-                                                ?.charAt(0)
-                                                .toUpperCase()}
-                                        </div>
+                                    <Link
+                                        href="/profile"
+                                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                    >
+                                        {getUserAvatar() ? (
+                                            <img
+                                                src={getUserAvatar()!}
+                                                alt={
+                                                    getUserDisplayName() ||
+                                                    "User"
+                                                }
+                                                className="h-8 w-8 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="h-8 w-8 rounded-full bg-gradient-premium flex items-center justify-center text-white text-sm font-medium">
+                                                {getUserDisplayName()
+                                                    ?.charAt(0)
+                                                    .toUpperCase()}
+                                            </div>
+                                        )}
                                         <span className="text-sm font-medium">
                                             {getUserDisplayName()}
                                         </span>
-                                    </div>
+                                    </Link>
                                     <Button
                                         variant="outline"
                                         size="sm"

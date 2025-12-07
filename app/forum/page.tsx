@@ -21,12 +21,13 @@ import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 const CATEGORIES = [
-    "Analisis Film",
-    "Behind The Scenes",
-    "Diskusi Umum",
-    "Rekomendasi",
-    "Komunitas",
-    "Teknis",
+    { value: "general", label: "Diskusi Umum" },
+    { value: "filmmaking", label: "Pembuatan Film" },
+    { value: "technical", label: "Teknis" },
+    { value: "showcase", label: "Showcase" },
+    { value: "feedback", label: "Feedback" },
+    { value: "events", label: "Event" },
+    { value: "other", label: "Lainnya" },
 ];
 
 export default function Forum() {
@@ -310,17 +311,20 @@ export default function Forum() {
                                     </button>
                                     {CATEGORIES.map((category) => (
                                         <button
-                                            key={category}
+                                            key={category.value}
                                             onClick={() =>
-                                                setSelectedCategory(category)
+                                                setSelectedCategory(
+                                                    category.value,
+                                                )
                                             }
                                             className={`w-full text-left px-3 py-2 rounded-lg transition-colors text-sm ${
-                                                selectedCategory === category
+                                                selectedCategory ===
+                                                category.value
                                                     ? "bg-primary text-primary-foreground"
                                                     : "hover:bg-muted"
                                             }`}
                                         >
-                                            {category}
+                                            {category.label}
                                         </button>
                                     ))}
                                 </div>

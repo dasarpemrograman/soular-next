@@ -21,12 +21,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
-    "Analisis Film",
-    "Behind The Scenes",
-    "Diskusi Umum",
-    "Rekomendasi",
-    "Komunitas",
-    "Teknis",
+    { value: "general", label: "Diskusi Umum" },
+    { value: "filmmaking", label: "Pembuatan Film" },
+    { value: "technical", label: "Teknis" },
+    { value: "showcase", label: "Showcase" },
+    { value: "feedback", label: "Feedback" },
+    { value: "events", label: "Event" },
+    { value: "other", label: "Lainnya" },
 ];
 
 export default function NewDiscussion() {
@@ -128,7 +129,9 @@ export default function NewDiscussion() {
                                             setTitle(e.target.value)
                                         }
                                         className={
-                                            errors.title ? "border-destructive" : ""
+                                            errors.title
+                                                ? "border-destructive"
+                                                : ""
                                         }
                                     />
                                     {errors.title && (
@@ -160,10 +163,10 @@ export default function NewDiscussion() {
                                         <SelectContent>
                                             {CATEGORIES.map((cat) => (
                                                 <SelectItem
-                                                    key={cat}
-                                                    value={cat}
+                                                    key={cat.value}
+                                                    value={cat.value}
                                                 >
-                                                    {cat}
+                                                    {cat.label}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -206,18 +209,19 @@ export default function NewDiscussion() {
 
                                 {/* Tags */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="tags">
-                                        Tag (opsional)
-                                    </Label>
+                                    <Label htmlFor="tags">Tag (opsional)</Label>
                                     <Input
                                         id="tags"
                                         type="text"
                                         placeholder="Pisahkan dengan koma, contoh: horror, thriller, indonesia"
                                         value={tags}
-                                        onChange={(e) => setTags(e.target.value)}
+                                        onChange={(e) =>
+                                            setTags(e.target.value)
+                                        }
                                     />
                                     <p className="text-sm text-muted-foreground">
-                                        Tag membantu orang menemukan diskusi Anda
+                                        Tag membantu orang menemukan diskusi
+                                        Anda
                                     </p>
                                 </div>
 
@@ -277,9 +281,7 @@ export default function NewDiscussion() {
                                     • Hindari spam, bahasa kasar, atau konten
                                     yang tidak pantas
                                 </li>
-                                <li>
-                                    • Gunakan kategori dan tag yang sesuai
-                                </li>
+                                <li>• Gunakan kategori dan tag yang sesuai</li>
                             </ul>
                         </Card>
                     </motion.div>

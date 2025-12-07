@@ -8,8 +8,8 @@ interface Film {
     description: string;
     category: string;
     youtube_url: string;
-    thumbnail_url: string | null;
-    duration_minutes: number | null;
+    thumbnail: string | null;
+    duration: number | null;
     created_at: string;
 }
 

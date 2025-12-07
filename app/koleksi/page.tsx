@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, Suspense } from "react";
 import { useFilms } from "@/hooks/useFilms";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const categories = [
     { label: "Semua", value: "all" },
@@ -20,6 +20,7 @@ const categories = [
 ];
 
 function KoleksiContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const searchFromUrl = searchParams.get("search") || "";
 
@@ -165,12 +166,15 @@ function KoleksiContent() {
                                         duration: 0.5,
                                         delay: index * 0.05,
                                     }}
+                                    onClick={() =>
+                                        router.push(`/film/${film.id}`)
+                                    }
                                 >
                                     <Card className="group overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 cursor-pointer">
                                         <div className="relative aspect-[2/3] overflow-hidden bg-muted">
-                                            {film.thumbnail_url ? (
+                                            {film.thumbnail ? (
                                                 <img
-                                                    src={film.thumbnail_url}
+                                                    src={film.thumbnail}
                                                     alt={film.title}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 />
@@ -205,14 +209,11 @@ function KoleksiContent() {
                                                 {film.description}
                                             </p>
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                {film.duration_minutes && (
+                                                {film.duration && (
                                                     <>
                                                         <Clock className="h-3 w-3" />
                                                         <span>
-                                                            {
-                                                                film.duration_minutes
-                                                            }{" "}
-                                                            min
+                                                            {film.duration} min
                                                         </span>
                                                     </>
                                                 )}

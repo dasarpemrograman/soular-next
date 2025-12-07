@@ -28,11 +28,17 @@ interface Event {
     id: string;
     title: string;
     description: string;
-    event_date: string;
+    date: string;
+    end_date: string | null;
     location: string;
-    organizer: string;
+    is_online: boolean;
+    online_link: string | null;
+    event_type: string;
     max_participants: number | null;
     image_url: string | null;
+    host_id: string | null;
+    status: string;
+    tags: string[];
     created_at: string;
     is_registered?: boolean;
 }
@@ -116,7 +122,7 @@ function ShareButton({ event }: { event: Event }) {
 
 function AddToCalendarButton({ event }: { event: Event }) {
     const handleAddToCalendar = () => {
-        const eventDate = new Date(event.event_date);
+        const eventDate = new Date(event.date);
         const endDate = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
         const formatDate = (date: Date) => {
@@ -185,7 +191,7 @@ export default function EventDetailPage({
         );
     }
 
-    const eventDate = new Date(event.event_date);
+    const eventDate = new Date(event.date);
     const isUpcoming = eventDate > new Date();
     const isPast = eventDate < new Date();
 
@@ -269,18 +275,18 @@ export default function EventDetailPage({
                         {/* Organizer Info */}
                         <Card className="p-6">
                             <h2 className="text-2xl font-bold mb-4">
-                                Organizer
+                                Event Type
                             </h2>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full bg-gradient-premium flex items-center justify-center text-white font-bold text-lg">
-                                    {event.organizer.charAt(0).toUpperCase()}
+                                    {event.event_type.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-semibold">
-                                        {event.organizer}
+                                    <p className="font-semibold capitalize">
+                                        {event.event_type}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        Event Organizer
+                                        Event Category
                                     </p>
                                 </div>
                             </div>

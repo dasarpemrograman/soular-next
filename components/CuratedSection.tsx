@@ -70,9 +70,9 @@ export const CuratedSection = () => {
                                 <Link href={`/film/${film.id}`}>
                                     <Card className="group overflow-hidden bg-card border-border hover:border-primary/50 transition-all duration-300 cursor-pointer">
                                         <div className="relative aspect-[2/3] overflow-hidden bg-muted">
-                                            {film.thumbnail_url ? (
+                                            {film.thumbnail ? (
                                                 <img
-                                                    src={film.thumbnail_url}
+                                                    src={film.thumbnail}
                                                     alt={film.title}
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                 />
@@ -98,13 +98,10 @@ export const CuratedSection = () => {
                                                 {film.title}
                                             </h3>
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                {film.duration_minutes && (
+                                                {film.duration && (
                                                     <>
                                                         <span>
-                                                            {
-                                                                film.duration_minutes
-                                                            }{" "}
-                                                            min
+                                                            {film.duration} min
                                                         </span>
                                                     </>
                                                 )}

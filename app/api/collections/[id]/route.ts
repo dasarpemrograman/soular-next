@@ -70,7 +70,6 @@ export async function GET(
           duration,
           category,
           thumbnail,
-          poster_url,
           is_premium,
           rating,
           view_count,

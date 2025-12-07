@@ -31,7 +31,7 @@ function EventCard({ event }: { event: RegisteredEvent }) {
     const unregister = useUnregisterEvent();
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const eventDate = new Date(event.event_date);
+    const eventDate = new Date(event.date);
     const isUpcoming = eventDate > new Date();
 
     const handleUnregister = async () => {
@@ -280,9 +280,9 @@ export default function MyEventsPage() {
     // Filter events by upcoming/past
     const now = new Date();
     const upcomingEvents =
-        events?.filter((event) => new Date(event.event_date) > now) || [];
+        events?.filter((event) => new Date(event.date) > now) || [];
     const pastEvents =
-        events?.filter((event) => new Date(event.event_date) <= now) || [];
+        events?.filter((event) => new Date(event.date) <= now) || [];
 
     const displayEvents =
         activeTab === "upcoming" ? upcomingEvents : pastEvents;
@@ -414,7 +414,7 @@ export default function MyEventsPage() {
                                               Math.min(
                                                   ...upcomingEvents.map((e) =>
                                                       new Date(
-                                                          e.event_date,
+                                                          e.date,
                                                       ).getTime(),
                                                   ),
                                               ),

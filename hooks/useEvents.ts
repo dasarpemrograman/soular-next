@@ -15,11 +15,17 @@ export interface Event {
     id: string;
     title: string;
     description: string;
-    event_date: string;
+    date: string;
+    end_date: string | null;
     location: string;
-    organizer: string;
+    is_online: boolean;
+    online_link: string | null;
+    event_type: string;
     max_participants: number | null;
     image_url: string | null;
+    host_id: string | null;
+    status: string;
+    tags: string[];
     created_at: string;
     is_registered?: boolean;
 }
@@ -28,15 +34,20 @@ export interface RegisteredEvent {
     id: string;
     title: string;
     description: string;
-    event_date: string;
+    date: string;
+    end_date: string | null;
     location: string;
-    organizer: string;
+    is_online: boolean;
+    online_link: string | null;
+    event_type: string;
     max_participants: number | null;
     image_url: string | null;
+    host_id: string | null;
+    status: string;
+    tags: string[];
     created_at: string;
     registration_status: string;
     registered_at: string;
-    registration_id: string;
 }
 
 export interface EventsParams {

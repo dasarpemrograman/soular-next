@@ -62,7 +62,7 @@ export const CommunityEvents = () => {
                 {!isLoading && !error && events.length > 0 && (
                     <div className="space-y-6">
                         {events.map((event, index) => {
-                            const eventDate = new Date(event.event_date);
+                            const eventDate = new Date(event.date);
                             const formattedDate = format(
                                 eventDate,
                                 "dd MMM yyyy",
